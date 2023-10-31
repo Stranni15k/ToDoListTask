@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Задачник</string>
+    <string name="user_name">Имя</string>
+    <string name="user_login">Логин</string>
+    <string name="user_password">Пароль</string>
+    <string name="users_title">Пользователи</string>
+    <string name="user_view_title">Профиль пользователя</string>
+    <string name="home_title">Мой дом</string>
+    <string name="user_my_title">Мой профиль</string>
+    <string name="login_title">Авторизация</string>
+    <string name="logout_title">Выход</string>
+    <string name="create_task_title">Создание задачи</string>
+    <string name="edit_task_title">Изменение задачи</string>
+    <string name="favorite_task_title">Избранные</string>
+</resources>
