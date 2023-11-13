@@ -4,9 +4,7 @@ package com.example.todolisttask.composeui.navigation
 import CreateTask
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -23,7 +21,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination
@@ -41,7 +38,6 @@ import com.example.pmuapp.composeui.Profile
 import com.example.todolisttask.R
 import com.example.todolisttask.composeui.EditTask
 import com.example.todolisttask.composeui.Favorite
-import com.example.todolisttask.models.composeui.TaskList
 import com.example.todolisttask.models.model.AuthViewModel
 import com.example.todolisttask.models.model.TaskViewModel
 import com.example.todolisttask.models.model.UserViewModel

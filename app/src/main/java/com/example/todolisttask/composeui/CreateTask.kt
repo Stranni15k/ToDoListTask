@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.todolisttask.models.model.AuthViewModel
 import com.example.todolisttask.models.model.Task
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,19 +48,19 @@ fun CreateTask(navController: NavController, onSaveClick: (Task) -> Unit) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(
-            onClick = {
-                if (taskName.isNotEmpty()) {
-                    val newTask = Task(0, taskName, taskDescription)
-                    onSaveClick(newTask)
-                    taskName = ""
-
-                    navController.popBackStack()
-                }
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Сохранить")
-        }
+//        Button(
+//            onClick = {
+//                if (taskName.isNotEmpty()) {
+//                    val newTask = Task(0, taskName, taskDescription)
+//                    onSaveClick(newTask)
+//                    taskName = ""
+//
+//                    navController.popBackStack()
+//                }
+//            },
+//            modifier = Modifier.fillMaxWidth()
+//        ) {
+//            Text("Сохранить")
+//        }
     }
 }

@@ -12,4 +12,6 @@
     <string name="create_task_title">Создание задачи</string>
     <string name="edit_task_title">Изменение задачи</string>
     <string name="favorite_task_title">Избранные</string>
+    <string name="task_name">Название задачи</string>
+    <string name="password_name">Пароль</string>
 </resources>

@@ -28,7 +28,6 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import coil.compose.rememberImagePainter
 import com.example.todolisttask.composeui.navigation.Screen
 import com.example.todolisttask.models.model.User
 import kotlinx.coroutines.flow.callbackFlow

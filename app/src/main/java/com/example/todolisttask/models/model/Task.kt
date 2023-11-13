@@ -1,43 +1,39 @@
 package com.example.todolisttask.models.model
 
-import android.media.Image
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
-import java.io.Serializable
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.PrimaryKey
 
-data class Task(
-    var id: Int,
-    val name: String,
-    val description: String
-) : Serializable
 
-class TaskViewModel : ViewModel() {
-    var tasks: MutableState<List<Task>> = mutableStateOf(
-        emptyList()
+@Entity(tableName = "tasks", foreignKeys = [
+    ForeignKey(
+        entity = User::class,
+        parentColumns = ["uid"],
+        childColumns = ["user_id"],
+        onDelete = ForeignKey.RESTRICT,
+        onUpdate = ForeignKey.RESTRICT
     )
-
-    fun createTask(newTask: Task): Task {
-        newTask.id = tasks.value.size.toInt()
-        val updatedTasks = tasks.value.toMutableList()
-        updatedTasks.add(newTask)
-        tasks.value = updatedTasks
-        return newTask
+])
+data class Task(
+    @PrimaryKey(autoGenerate = true)
+    val uid: Int?,
+    @ColumnInfo(name = "task_name")
+    val name: String,
+    @ColumnInfo(name = "task_description")
+    val description: String,
+    @ColumnInfo(name = "user_id", index = true)
+    val userId: Int
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        other as Task
+        if (uid != other.uid) return false
+        return true
     }
 
-    fun deleteTask(task: Task) {
-        val updatedTasks = tasks.value.toMutableList()
-        updatedTasks.remove(task)
-        tasks.value = updatedTasks
-    }
-
-    fun updateTask(updatedTask: Task) {
-        val updatedTasks = tasks.value.toMutableList()
-        val index = updatedTasks.indexOfFirst { it.id == updatedTask.id }
-
-        if (index != -1) {
-            updatedTasks[index] = updatedTask
-            tasks.value = updatedTasks
-        }
+    override fun hashCode(): Int {
+        return uid ?: -1
     }
 }
