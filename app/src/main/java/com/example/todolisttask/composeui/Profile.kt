@@ -1,4 +1,4 @@
-package com.example.pmuapp.composeui
+package com.example.todolisttask.composeui
 
 import android.annotation.SuppressLint
 import android.net.Uri
@@ -35,7 +35,7 @@ import kotlinx.coroutines.flow.callbackFlow
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("RememberReturnType")
 @Composable
-fun Profile(navController: NavController, currentUser: User?, onSaveClick: (User) -> Unit) {
+fun Profile(navController: NavController,currentUser: User?, onSaveClick: (User) -> Unit) {
     val nameState = remember { mutableStateOf(currentUser?.name.orEmpty()) }
     val loginState = remember { mutableStateOf(currentUser?.login.orEmpty()) }
     val passwordState = remember { mutableStateOf(currentUser?.password.orEmpty()) }
@@ -76,12 +76,10 @@ fun Profile(navController: NavController, currentUser: User?, onSaveClick: (User
         Button(
             onClick = {
                 val updatedUser = User(
-                    currentUser?.id ?: 0,
+                    currentUser?.uid ?: 0,
                     nameState.value,
                     loginState.value,
                     passwordState.value,
-                    currentUser?.taskId ?: emptyList(),
-                currentUser?.favoritetask?: emptyList()
                 )
                 onSaveClick(updatedUser)
             },
@@ -90,4 +88,5 @@ fun Profile(navController: NavController, currentUser: User?, onSaveClick: (User
             Text("Сохранить")
         }
     }
+
 }

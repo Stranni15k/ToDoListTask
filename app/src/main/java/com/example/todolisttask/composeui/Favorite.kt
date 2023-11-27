@@ -13,13 +13,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.todolisttask.models.model.AuthViewModel
-import com.example.todolisttask.models.model.TaskViewModel
-import com.example.todolisttask.models.model.UserViewModel
+import com.example.todolisttask.models.model.ViewModels.TaskViewModel
+import com.example.todolisttask.models.model.ViewModels.UserViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("RememberReturnType")
 @Composable
 fun Favorite(navController: NavController, authViewModel: AuthViewModel, taskViewModel: TaskViewModel, userViewModel: UserViewModel) {
+    /*
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -29,4 +30,6 @@ fun Favorite(navController: NavController, authViewModel: AuthViewModel, taskVie
 
         TaskList(navController, authViewModel, taskViewModel, userViewModel, authViewModel.currentUser?.id ?: -1, showFavorites = true)
     }
+
+     */
 }

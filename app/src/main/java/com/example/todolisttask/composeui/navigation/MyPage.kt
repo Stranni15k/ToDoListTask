@@ -2,6 +2,7 @@ package com.example.todolisttask.composeui.navigation
 
 
 import CreateTask
+import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.PaddingValues
@@ -19,12 +20,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination
-
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -34,15 +37,22 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.pmuapp.composeui.Profile
+import com.example.todolisttask.composeui.Profile
+import com.example.todolisttask.AppDatabase
 import com.example.todolisttask.R
 import com.example.todolisttask.composeui.EditTask
 import com.example.todolisttask.composeui.Favorite
 import com.example.todolisttask.models.model.AuthViewModel
-import com.example.todolisttask.models.model.TaskViewModel
-import com.example.todolisttask.models.model.UserViewModel
 import com.example.todolisttask.composeui.Login
 import com.example.todolisttask.composeui.Home
+import com.example.todolisttask.models.dao.TaskDao
+import com.example.todolisttask.models.dao.UserDao
+import com.example.todolisttask.models.model.ViewModels.TaskViewModel
+import com.example.todolisttask.models.model.ViewModels.UserViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -102,6 +112,7 @@ fun Navbar(
     }
 }
 
+@SuppressLint("StateFlowValueCalledInComposition", "SuspiciousIndentation")
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NavHost(
@@ -117,41 +128,44 @@ fun NavHost(
         modifier = Modifier.padding(innerPadding)
     ) {
         composable(Screen.Login.route) {
-            Login(navController, authViewModel,userViewModel.getUsers())        }
+            Login(navController, authViewModel)        }
         composable(Screen.Logout.route) {
-            Login(navController, authViewModel,userViewModel.getUsers())       }
+            Login(navController, authViewModel)       }
+
+//
         composable(Screen.CreateTask.route) {
-            val currentUser = authViewModel.currentUser ?: userViewModel.getUsers().firstOrNull()
-            CreateTask ( navController, onSaveClick = { newTask ->
-                var adedTask = taskViewModel.createTask(newTask)
-                userViewModel.addPetToUser(currentUser?.id ?:0, adedTask)
-                authViewModel.currentUser = userViewModel.getUser(currentUser?.id ?:0)
+            val currentUser = authViewModel.currentUser
+            val id: Int = currentUser.value?.uid?.toInt() ?: 0
+            CreateTask ( navController, id , onSaveClick = { newTask ->
+                taskViewModel.createTask(newTask)
+                //userViewModel.addTask(currentUser?.id ?:0, adedTask)
+                authViewModel.updateCurrentUset(id)
             }
                 )
 
             }
-
-        composable(Screen.Favorite.route){
-            val currentUser = authViewModel.currentUser ?: userViewModel.getUsers().firstOrNull()
-            if (currentUser != null) {
-                Favorite(navController,
-                    authViewModel,
-                    taskViewModel,
-                    userViewModel
-                )
-            } else {
-            }
-
-        }
-
+//
+//        composable(Screen.Favorite.route){
+//            val currentUser = authViewModel.currentUser ?: userViewModel.getUsers().firstOrNull()
+//            if (currentUser != null) {
+//                Favorite(navController,
+//                    authViewModel,
+//                    taskViewModel,
+//                    userViewModel
+//                )
+//            } else {
+//            }
+//
+//        }
+//
         composable(Screen.Profile.route) {
-            val currentUser = authViewModel.currentUser ?: userViewModel.getUsers().firstOrNull()
+            val currentUser = authViewModel.currentUser.collectAsState()
             if (currentUser != null) {
                 Profile(navController,
-                    currentUser = currentUser,
+                    currentUser = currentUser.value,
                     onSaveClick = {updatedUser ->
                         userViewModel.updateUser(updatedUser)
-                        authViewModel.currentUser = updatedUser
+                        authViewModel.updateCurrentUset(currentUser?.value?.uid ?:-1)
                         navController.navigate(Screen.Profile.route)
                     }
                 )
@@ -160,7 +174,7 @@ fun NavHost(
         }
 
         composable(Screen.Home.route){
-            val currentUser = authViewModel.currentUser ?: userViewModel.getUsers().firstOrNull()
+            val currentUser = authViewModel.currentUser
             if (currentUser != null) {
                 Home(navController,
                     authViewModel,
@@ -176,10 +190,13 @@ fun NavHost(
             arguments = listOf(navArgument("id") { type = NavType.IntType })
         ) { backStackEntry ->
             val petId = backStackEntry.arguments?.getInt("id") ?: -1
-                EditTask(navController,authViewModel, taskViewModel, userViewModel, petId)
-
+            val task = taskViewModel.getTask(petId)
+                EditTask(navController,authViewModel, taskViewModel, userViewModel, task.value,
+                    onSaveClick = {updatedTask ->
+                        taskViewModel.viewModelScope.launch {
+                        taskViewModel.updateTask(updatedTask)
+                            authViewModel.updateCurrentUset(id)}})
         }
-
     }
 }
 
@@ -188,9 +205,13 @@ fun NavHost(
 @Composable
 fun MainNavbar() {
     val navController = rememberNavController()
-    val authViewModel = remember { AuthViewModel() }
-    val userViewModel = remember {UserViewModel() }
-    val taskViewModel = remember {TaskViewModel()}
+    val context = LocalContext.current
+    val database: AppDatabase = AppDatabase.getInstance(context)
+    val userDao: UserDao = database.userDao()
+    val taskDao: TaskDao = database.taskDao()
+    val authViewModel = remember { AuthViewModel(userDao) }
+    val userViewModel = remember { UserViewModel(userDao) }
+    val taskViewModel = remember { TaskViewModel(taskDao) }
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
     val currentScreen = currentDestination?.route?.let { Screen.getItem(it) }

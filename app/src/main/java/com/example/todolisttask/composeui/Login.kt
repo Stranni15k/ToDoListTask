@@ -20,18 +20,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.example.todolisttask.composeui.navigation.Screen
 import com.example.todolisttask.models.model.AuthViewModel
 import com.example.todolisttask.models.model.User
+import com.example.todolisttask.models.model.ViewModels.UserViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Login(
     navController: NavHostController,
-    authViewModel: AuthViewModel,
-    users: List<User>
+    authViewModel: AuthViewModel
 ) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -67,12 +70,18 @@ fun Login(
 
         Button(
             onClick = {
-                val authenticatedUser = users.find { it.login == username && it.password == password }
-                if (authenticatedUser != null) {
-                    authViewModel.currentUser = authenticatedUser
-                    navController.navigate(Screen.Home.route)
-                } else {
-                    println("Authentication failed")
+                authViewModel.viewModelScope.launch {
+                    authViewModel.loginUser(username, password)
+
+                    // Добавляем небольшую задержку (например, 100 мс) для обеспечения завершения операции входа в систему
+                    delay(1000)
+
+                    val authenticatedUser = authViewModel.currentUser.value
+                    if (authenticatedUser != null) {
+                        navController.navigate(Screen.Home.route)
+                    } else {
+                        println("Аутентификация не удалась")
+                    }
                 }
             },
             modifier = Modifier.fillMaxWidth()

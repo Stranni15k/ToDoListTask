@@ -16,7 +16,7 @@ import com.example.todolisttask.models.model.Task
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateTask(navController: NavController, onSaveClick: (Task) -> Unit) {
+fun CreateTask(navController: NavController, userId: Int , onSaveClick: (Task) -> Unit) {
     var taskName by remember { mutableStateOf("") }
     var taskDescription by remember { mutableStateOf("") }
 
@@ -48,19 +48,19 @@ fun CreateTask(navController: NavController, onSaveClick: (Task) -> Unit) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-//        Button(
-//            onClick = {
-//                if (taskName.isNotEmpty()) {
-//                    val newTask = Task(0, taskName, taskDescription)
-//                    onSaveClick(newTask)
-//                    taskName = ""
-//
-//                    navController.popBackStack()
-//                }
-//            },
-//            modifier = Modifier.fillMaxWidth()
-//        ) {
-//            Text("Сохранить")
-//        }
+        Button(
+            onClick = {
+                if (taskName.isNotEmpty()) {
+                    val newTask = Task(taskName, taskDescription, userId)
+                    onSaveClick(newTask)
+                    taskName = ""
+
+                    navController.popBackStack()
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Сохранить")
+        }
     }
 }

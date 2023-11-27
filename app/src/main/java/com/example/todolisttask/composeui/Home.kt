@@ -1,6 +1,7 @@
-*/
 package com.example.todolisttask.composeui
 
+import com.example.todolisttask.models.model.ViewModels.TaskViewModel
+import com.example.todolisttask.models.model.ViewModels.UserViewModel
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,9 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.todolisttask.composeui.navigation.Screen
+import com.example.todolisttask.models.composeui.TaskList
 import com.example.todolisttask.models.model.AuthViewModel
-import com.example.todolisttask.models.model.TaskViewModel
-import com.example.todolisttask.models.model.UserViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("RememberReturnType")
@@ -39,7 +39,7 @@ fun Home(navController: NavController, authViewModel: AuthViewModel, taskViewMod
         }
         Spacer(modifier = Modifier.height(16.dp))
 
-        TaskList(navController, authViewModel, taskViewModel, userViewModel, authViewModel.currentUser?.id ?: -1)
+        TaskList(navController, authViewModel, taskViewModel, userViewModel, authViewModel.currentUser?.value?.uid ?: -1)
 
     }
 }

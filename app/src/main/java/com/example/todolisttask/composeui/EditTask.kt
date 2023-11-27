@@ -1,6 +1,12 @@
 package com.example.todolisttask.composeui
 
+import android.annotation.SuppressLint
 import android.os.Build.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.withContext
+
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -29,17 +35,19 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.todolisttask.composeui.navigation.Screen
 import com.example.todolisttask.models.model.AuthViewModel
-import com.example.todolisttask.models.model.TaskViewModel
-import com.example.todolisttask.models.model.UserViewModel
+import com.example.todolisttask.models.model.Task
+import com.example.todolisttask.models.model.User
+import com.example.todolisttask.models.model.ViewModels.TaskViewModel
+import com.example.todolisttask.models.model.ViewModels.UserViewModel
+import kotlinx.coroutines.coroutineScope
 
 @RequiresApi(VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
+@SuppressLint("RememberReturnType")
 @Composable
-fun EditTask(navController: NavController, authViewModel: AuthViewModel, taskViewModel: TaskViewModel, userViewModel: UserViewModel, taskId : Int) {
-    val task = (authViewModel.currentUser?.taskId ?: emptyList()).find { it.id == taskId }
-
-    var taskName by remember { mutableStateOf(task?.name ?: "") }
-    var taskDescriptions by remember { mutableStateOf(task?.description ?: "") }
+fun EditTask(navController: NavController, authViewModel: AuthViewModel, taskViewModel: TaskViewModel, userViewModel: UserViewModel, task : Task?, onSaveClick: (Task) -> Unit) {
+    var taskName = remember { mutableStateOf(task?.name.orEmpty()) }
+    var taskDescriptions = remember { mutableStateOf(task?.description.orEmpty()) }
 
     Column(
         modifier = Modifier
@@ -48,8 +56,8 @@ fun EditTask(navController: NavController, authViewModel: AuthViewModel, taskVie
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         OutlinedTextField(
-            value = taskName,
-            onValueChange = { taskName = it },
+            value = taskName.value,
+            onValueChange = { taskName.value = it },
             label = { Text("Название задания") },
             modifier = Modifier
                 .fillMaxWidth()
@@ -57,8 +65,8 @@ fun EditTask(navController: NavController, authViewModel: AuthViewModel, taskVie
         )
 
         OutlinedTextField(
-            value = taskDescriptions,
-            onValueChange = { taskDescriptions = it },
+            value = taskDescriptions.value,
+            onValueChange = { taskDescriptions.value = it },
             label = { Text("Описание задания") },
             modifier = Modifier
                 .fillMaxWidth()
@@ -75,11 +83,12 @@ fun EditTask(navController: NavController, authViewModel: AuthViewModel, taskVie
 
         Button(
             onClick = {
-                val updatedTask = task?.copy(name = taskName, description = taskDescriptions) ?: return@Button
-
-                taskViewModel.updateTask(updatedTask)
-                userViewModel.updateTaskOnUser(authViewModel.currentUser?.id ?: -1, updatedTask)
-                authViewModel.currentUser=userViewModel.getUser(authViewModel.currentUser?.id ?: -1)
+                val updatedTask = Task(
+                    task?.uid ?:0,
+                    taskName.value,
+                    taskDescriptions.value,
+                    task?.userId ?:0)
+                onSaveClick(updatedTask)
                 navController.popBackStack()
             },
             modifier = Modifier.padding(16.dp)
@@ -88,4 +97,6 @@ fun EditTask(navController: NavController, authViewModel: AuthViewModel, taskVie
         }
 
     }
+
+
 }

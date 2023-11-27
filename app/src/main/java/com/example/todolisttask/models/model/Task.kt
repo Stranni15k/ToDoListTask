@@ -3,6 +3,7 @@ package com.example.todolisttask.models.model
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 
 
@@ -25,6 +26,13 @@ data class Task(
     @ColumnInfo(name = "user_id", index = true)
     val userId: Int
 ) {
+    @Ignore
+    constructor(
+        name: String,
+        description: String,
+        userId: Int
+    ) : this(null, name, description, userId)
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

@@ -15,7 +15,7 @@ interface UserDao {
     fun getAll(): Flow<List<User>>
 
     @Query("select * from users left join tasks on users.uid = tasks.user_id where users.uid = :uid")
-    suspend fun getByUid(uid: Int): TaskWithUser
+    suspend fun getByUid(uid: Int): User
 
     @Insert
     suspend fun insert(user: User)
@@ -26,6 +26,6 @@ interface UserDao {
     @Delete
     suspend fun delete(user: User)
 
-    @Query("SELECT * FROM users WHERE login = :username AND password = :password")
+    @Query("SELECT * FROM users WHERE users.login = :username AND users.password = :password")
     suspend fun getUserByUsernameAndPassword(username: String, password: String): User?
 }

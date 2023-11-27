@@ -27,13 +27,13 @@ abstract class AppDatabase : RoomDatabase() {
         private suspend fun populateDatabase() {
             INSTANCE?.let { database ->
                 // Groups
-                val taskDao = database.taskDao()
-                val task1 = Task(1, "Test1", "TestDesk",1)
-                val task2 = Task(2, "Test2", "TestDesk",1)
-                val task3 = Task(3, "Test3", "TestDesk",1)
-                taskDao.insert(task1)
-                taskDao.insert(task2)
-                taskDao.insert(task3)
+//                val taskDao = database.taskDao()
+//                val task1 = Task(1, "Test1", "TestDesk",1)
+//                val task2 = Task(2, "Test2", "TestDesk",1)
+//                val task3 = Task(3, "Test3", "TestDesk",1)
+//                taskDao.insert(task1)
+//                taskDao.insert(task2)
+//                taskDao.insert(task3)
                 // Students
                 val userDao = database.userDao()
                 val user1 = User("Sergey", "User", "123456")
